@@ -1,0 +1,94 @@
+/* Строки таблиц */
+.rows { display: flex; flex-direction: column; gap: 6px; }
+.rowline {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  align-items: center;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fbfcfe;
+}
+.rowline.swaprow { grid-template-columns: 1fr; }
+.rowline input, .rowline select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 6px 8px;
+  font-family: inherit;
+  background: #fff;
+}
+
+.shift-pill-wrap { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.cycle-preview { display: flex; gap: 2px; }
+.cycle-preview i {
+  width: 7px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--rest-soft);
+  display: inline-block;
+}
+.cycle-preview i.day { background: var(--day-color); }
+.cycle-preview i.night { background: var(--night-color); }
+.cycle-preview i.on { background: var(--work); }
+
+.icon-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: #b91c1c;
+  cursor: pointer;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+}
+.icon-btn:active { transform: scale(0.92); }
+
+/* Бейджи */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-weight: 700;
+  font-family: "Courier New", monospace;
+  padding: 0 4px;
+  border: 1.5px solid transparent;
+  transition: transform .1s ease, box-shadow .2s ease;
+  font-size: calc(var(--sub-font)*0.75);
+  min-width: 18px;
+  height: 18px;
+}
+.badge:active { transform: scale(0.92); }
+.badge.Р { background: var(--work-soft); color: var(--work); border-color: var(--work); }
+.badge.РЗ { background: var(--sub-soft); color: var(--sub); border-color: var(--sub); }
+.badge.В { background: var(--rest-soft); color: var(--rest); font-weight: 500; border-color: var(--rest); }
+.badge.Б { background: var(--sick-soft); color: var(--sick); border-color: var(--sick); }
+.badge.О { background: var(--vacation-soft); color: var(--vacation); border-color: var(--vacation); }
+.badge.Р-День { background: var(--day-bg); color: var(--day-color); border-color: var(--day-color); font-weight: 800; }
+.badge.РЗ-День { background: var(--day-bg); color: var(--day-color); border-color: var(--day-color); border-style: dashed; font-weight: 800; }
+.badge.Р-Ночь { background: var(--night-bg); color: var(--night-color); border-color: var(--night-color); font-weight: 800; }
+.badge.РЗ-Ночь { background: var(--night-bg); color: var(--night-color); border-color: var(--night-color); border-style: dashed; font-weight: 800; }
+
+.emp-badge {
+  font-size: calc(var(--sub-font)*0.5);
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-family: "Courier New", monospace;
+  border: 1px solid transparent;
+}
+.emp-badge.Р-День { background: var(--day-bg); color: var(--day-color); border-color: var(--day-color); }
+.emp-badge.РЗ-День { background: var(--day-bg); color: var(--day-color); border-color: var(--day-color); border-style: dashed; }
+.emp-badge.Р-Ночь { background: var(--night-bg); color: var(--night-color); border-color: var(--night-color); }
+.emp-badge.РЗ-Ночь { background: var(--night-bg); color: var(--night-color); border-color: var(--night-color); border-style: dashed; }

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
+    <title>Табель-график СЦИО</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/calendar.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <div id="app">
+        <header id="app-header">
+            <div class="brand">
+                <div>
+                    <h1>Табель-график СЦИО</h1>
+                    <p class="sub">Сменный график: смены, замены, больничные и отпуска — считаются автоматически</p>
+                </div>
+                <div class="toolbar">
+                    <button onclick="exportData()">⬇ JSON</button>
+                    <button onclick="exportCSV()">📊 CSV</button>
+                    <button onclick="document.getElementById('importFile').click()">⬆</button>
+                    <input id="importFile" type="file" accept="application/json" style="display:none">
+                    <button onclick="goToToday()">📅</button>
+                </div>
+            </div>
+            <div class="cyclebar">
+                <span></span><span></span><span></span><span></span><span></span>
+            </div>
+        </header>
+
+        <nav id="app-tabs">
+            <button class="active" data-tab="grafik">График</button>
+            <button data-tab="people">Сотрудники</button>
+            <button data-tab="swaps">Замены</button>
+            <button data-tab="settings">Циклы</button>
+        </nav>
+
+        <main>
+            <!-- График -->
+            <section id="tab-grafik" class="panel active">
+                <div class="stats" id="statsRow"></div>
+                <div class="card controls-card">
+                    <div class="controls">
+                        <div class="month-nav">
+                            <button onclick="shiftMonth(-1)">‹</button>
+                            <div class="field">
+                                <label>Месяц</label>
+                                <select id="monthSel"></select>
+                            </div>
+                            <button onclick="shiftMonth(1)">›</button>
+                            <span class="current-month-label" id="monthLabel">Август 2026</span>
+                        </div>
+                        <div class="field">
+                            <label>Год</label>
+                            <input id="yearInput" type="number" value="2026">
+                        </div>
+                        <div class="field">
+                            <label>Часов</label>
+                            <input id="shiftHours" type="number" value="12">
+                        </div>
+                        <div class="field">
+                            <label>Дата отсчёта</label>
+                            <input id="refDate" type="date" value="2026-08-01">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="search-wrap">
+                    <div class="field">
+                        <label>🔎 Поиск</label>
+                        <input id="searchInput" placeholder="ФИО...">
+                    </div>
+                    <div class="field">
+                        <label>Фильтр</label>
+                        <select id="filterShift">
+                            <option value="">Все</option>
+                            <option value="День 1">🟡 День 1</option>
+                            <option value="День 2">🟡 День 2</option>
+                            <option value="Ночь 1">🔵 Ночь 1</option>
+                            <option value="Ночь 2">🔵 Ночь 2</option>
+                        </select>
+                    </div>
+                    <div class="view-toggle">
+                        <button class="active" data-view="table" onclick="switchView('table')">📋</button>
+                        <button data-view="calendar" onclick="switchView('calendar')">📅</button>
+                    </div>
+                    <div class="history-buttons">
+                        <button onclick="undo()" title="Ctrl+Z">↩</button>
+                        <button onclick="redo()" title="Ctrl+Y">↪</button>
+                    </div>
+                </div>
+
+                <div id="tableContainer">
+                    <div class="schedule-scroll">
+                        <div id="scheduleTable"></div>
+                    </div>
+                </div>
+                <div id="calendarContainer" style="display:none;"></div>
+
+                <div class="legend" id="legend"></div>
+                <div id="conflictsWarning"></div>
+            </section>
+
+            <!-- Сотрудники -->
+            <section id="tab-people" class="panel">
+                <div class="card">
+                    <h2>👥 Сотрудники</h2>
+                    <p class="hint">ФИО, табельный номер и тип графика. 🟡 — день, 🔵 — ночь.</p>
+                    <div id="employeesRows" class="rows"></div>
+                    <button class="add-link" onclick="addEmployee()">+ Добавить</button>
+                </div>
+            </section>
+
+            <!-- Замены -->
+            <section id="tab-swaps" class="panel">
+                <div class="card">
+                    <h2>🩺 Замены</h2>
+                    <p class="hint">Больничные, отпуска и замены.</p>
+                    <div id="swapsRows" class="rows"></div>
+                    <button class="add-link" onclick="addSwap()">+ Добавить</button>
+                </div>
+            </section>
+
+            <!-- Настройки -->
+            <section id="tab-settings" class="panel">
+                <div class="card">
+                    <h2>⚙️ Циклы</h2>
+                    <p class="hint">Настройка количества дней в цикле и рабочих дней.</p>
+                    <div id="shiftTypesRows" class="rows"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/history.js"></script>
+    <script src="js/render/employees.js"></script>
+    <script src="js/render/shifts.js"></script>
+    <script src="js/render/swaps.js"></script>
+    <script src="js/render/table.js"></script>
+    <script src="js/render/calendar.js"></script>
+    <script src="js/handlers.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
