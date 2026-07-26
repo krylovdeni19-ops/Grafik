@@ -1,3 +1,6 @@
+
+
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -49,7 +52,6 @@
   ::selection{ background:var(--accent-soft); }
   :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
 
-  /* ===== ДИНАМИЧЕСКИЕ РАЗМЕРЫ ===== */
   :root{
     --header-padding:28px clamp(16px,4vw,48px) 0;
     --brand-font:26px;
@@ -314,7 +316,7 @@
   }
   table.sched td.today, table.sched th.today { box-shadow:none !important; border-radius:6px; }
 
-  /* ===== КАЛЕНДАРЬ (СЕТКА) ===== */
+  /* ===== КАЛЕНДАРЬ ===== */
   #calendarContainer {
     background:var(--panel);
     border-radius:10px;
@@ -350,6 +352,10 @@
     display:flex;
     flex-direction:column;
     border:1.5px solid transparent;
+    cursor:pointer;
+  }
+  .calendar-cell:hover{
+    background:#f7f9ff;
   }
   .calendar-cell .cell-date{
     font-weight:700;
@@ -429,6 +435,10 @@
     background:transparent;
     min-height:20px;
     border:none;
+    cursor:default;
+  }
+  .calendar-cell.empty:hover{
+    background:transparent;
   }
   .calendar-cell .cell-empty-label{
     color:#e8ecf0;
@@ -690,7 +700,7 @@
   <section id="tab-settings" class="panel">
     <div class="card">
       <h2>⚙️ Циклы</h2>
-      <p class="hint">Настройка типов графика. 🟡 — день, 🔵 — ночь.</p>
+      <p class="hint">Настройка количества дней в цикле и рабочих дней.</p>
       <div id="shiftTypesRows" class="rows"></div>
     </div>
   </section>
@@ -701,10 +711,10 @@
 /* ---------- СОСТОЯНИЕ ---------- */
 
 let shiftTypes = {
-  "День 1": {cycle:4, work:2, invert:false, type:'day'},
-  "День 2": {cycle:4, work:2, invert:true, type:'day'},
-  "Ночь 1": {cycle:6, work:3, invert:false, type:'night'},
-  "Ночь 2": {cycle:6, work:3, invert:true, type:'night'},
+  "День 1": {cycle:4, work:2, invert:false},
+  "День 2": {cycle:4, work:2, invert:true},
+  "Ночь 1": {cycle:6, work:3, invert:false},
+  "Ночь 2": {cycle:6, work:3, invert:true},
 };
 
 let employees = [
@@ -791,6 +801,13 @@ function getShiftType(shiftName){
   return shiftTypes[shiftName];
 }
 
+function getShiftTypeName(shiftName){
+  if (!shiftName) return '';
+  if (shiftName.includes('День')) return 'day';
+  if (shiftName.includes('Ночь')) return 'night';
+  return '';
+}
+
 function computeDayStatus(day, emp, refDate){
   const key = dateKey(day);
   const asOriginal = swaps.filter(s => s.date === key && s.original === emp.name);
@@ -813,12 +830,7 @@ function computeDayStatus(day, emp, refDate){
 function getBadgeClass(status, emp){
   let badgeClass = status;
   if (status === 'Р' || status === 'РЗ') {
-    const shiftType = getShiftType(emp.shift);
-    let type = shiftType?.type || '';
-    if (!type) {
-      if (emp.shift && emp.shift.includes('День')) type = 'day';
-      else if (emp.shift && emp.shift.includes('Ночь')) type = 'night';
-    }
+    const type = getShiftTypeName(emp.shift);
     if (type) {
       badgeClass = status + '-' + (type === 'day' ? 'День' : 'Ночь');
     }
@@ -830,8 +842,7 @@ function cyclePreviewHTML(def){
   let html = `<span class="cycle-preview">`;
   for(let i=0;i<def.cycle;i++){
     const on = def.invert ? (i>=def.work) : (i<def.work);
-    const cls = on ? (def.type === 'day' ? 'day' : 'night') : '';
-    html += `<i class="${cls}"></i>`;
+    html += `<i class="${on?'on':''}"></i>`;
   }
   html += `</span>`;
   return html;
@@ -939,7 +950,7 @@ function renderEmployees(){
   let html = "";
   employees.forEach((e,i)=>{
     const def = shiftTypes[e.shift];
-    const typeLabel = def ? (def.type === 'day' ? '🟡' : '🔵') : '';
+    const typeLabel = e.shift && e.shift.includes('День') ? '🟡' : (e.shift && e.shift.includes('Ночь') ? '🔵' : '');
     html += `<div class="rowline">
       <input value="${e.name}" placeholder="ФИО" onchange="employees[${i}].name=this.value; render()">
       <input value="${e.id||""}" placeholder="Табельный №" onchange="employees[${i}].id=this.value">
@@ -949,7 +960,7 @@ function renderEmployees(){
           ${Object.keys(shiftTypes).map(s=>`<option value="${s}" ${e.shift===s?"selected":""}>${s}</option>`).join("")}
         </select>
         ${def ? cyclePreviewHTML(def) : ''}
-        ${def ? `<span style="font-size:14px;">${typeLabel}</span>` : ''}
+        ${typeLabel ? `<span style="font-size:14px;">${typeLabel}</span>` : ''}
       </div>
       <button class="icon-btn" title="Удалить" onclick="employees.splice(${i},1); render()">✕</button>
     </div>`;
@@ -969,9 +980,9 @@ function renderShiftTypes(){
   let html = "";
   Object.keys(shiftTypes).forEach(name=>{
     const d = shiftTypes[name];
-    const typeLabel = d.type === 'day' ? '🟡 День' : '🔵 Ночь';
+    const typeLabel = name.includes('День') ? '🟡' : '🔵';
     html += `<div class="rowline" style="grid-template-columns:1fr;">
-      <div style="font-weight:600;font-size:calc(var(--brand-font)*0.5);">${name} — ${typeLabel}</div>
+      <div style="font-weight:600;font-size:calc(var(--brand-font)*0.5);">${name} ${typeLabel}</div>
       <div class="field" style="gap:2px;">
         <label>Дней в цикле</label>
         <input type="number" value="${d.cycle}" onchange="shiftTypes['${name}'].cycle=parseInt(this.value)||1; render()">
@@ -983,7 +994,7 @@ function renderShiftTypes(){
       <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
         ${cyclePreviewHTML(d)}
         <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted);">
-          <input type="checkbox" style="width:auto;" ${d.invert?"checked":""} onchange="shiftTypes['${name}'].invert=this.checked; render()"> в конце
+          <input type="checkbox" style="width:auto;" ${d.invert?"checked":""} onchange="shiftTypes['${name}'].invert=this.checked; render()"> в конце цикла
         </label>
       </div>
     </div>`;
@@ -1036,14 +1047,9 @@ function renderStats(days, refDate){
     days.forEach(d=>{
       const st = computeDayStatus(d, emp, refDate);
       if (st==="Р" || st==="РЗ"){
-        const type = getShiftType(emp.shift);
-        if (type === 'day' || type?.type === 'day') dayShifts++;
-        else if (type === 'night' || type?.type === 'night') nightShifts++;
-        else {
-          const shiftName = emp.shift || '';
-          if (shiftName.includes('День')) dayShifts++;
-          else if (shiftName.includes('Ночь')) nightShifts++;
-        }
+        const type = getShiftTypeName(emp.shift);
+        if (type === 'day') dayShifts++;
+        else if (type === 'night') nightShifts++;
       }
       if (st==="Б") sick++;
       if (st==="О") vac++;
@@ -1079,21 +1085,20 @@ function renderCalendar(){
     return;
   }
 
-  // Определяем первый день месяца (0 = воскресенье)
+  // Первый день месяца (0 = воскресенье)
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = nDays;
 
   let html = `<div class="calendar-grid">`;
   
-  // Заголовки дней недели (начинаем с понедельника)
+  // Заголовки дней недели
   const dayHeaders = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
   dayHeaders.forEach((d,i) => {
     const isWeekend = i >= 5;
     html += `<div class="day-header ${isWeekend ? 'weekend' : ''}">${d}</div>`;
   });
 
-  // Пустые ячейки до первого дня месяца
-  // Если firstDay = 0 (воскресенье), то пустых ячеек 6 (пн-сб)
+  // Пустые ячейки до первого дня
   const startOffset = firstDay === 0 ? 6 : firstDay - 1;
   for(let i=0; i<startOffset; i++){
     html += `<div class="calendar-cell empty"></div>`;
@@ -1106,25 +1111,23 @@ function renderCalendar(){
     const isToday = isSameDay(date, today);
     const isWeekend = date.getDay() === 0 || date.getDay() === 6;
     
-    // Собираем всех сотрудников на этот день
+    // Сотрудники на этот день
     const dayEmployees = visibleEmployees.filter(emp => {
       const status = computeDayStatus(date, emp, refDate);
       return status === 'Р' || status === 'РЗ';
     }).sort((a,b) => {
-      // Сортируем: сначала день, потом ночь
-      const typeA = getShiftType(a.shift)?.type || '';
-      const typeB = getShiftType(b.shift)?.type || '';
+      const typeA = getShiftTypeName(a.shift);
+      const typeB = getShiftTypeName(b.shift);
       if (typeA === 'day' && typeB === 'night') return -1;
       if (typeA === 'night' && typeB === 'day') return 1;
       return a.name.localeCompare(b.name);
     });
 
-    html += `<div class="calendar-cell ${isToday ? 'today' : ''}">`;
+    html += `<div class="calendar-cell ${isToday ? 'today' : ''}" onclick="onCellClick('${dateStr}')">`;
     html += `<div class="cell-date ${isWeekend ? 'weekend' : ''}">${d}</div>`;
     
     if (dayEmployees.length > 0){
       html += `<div class="cell-employees">`;
-      // Показываем первых 4 сотрудников
       const showEmployees = dayEmployees.slice(0, 4);
       showEmployees.forEach(emp => {
         const status = computeDayStatus(date, emp, refDate);
@@ -1147,6 +1150,11 @@ function renderCalendar(){
 
   html += `</div>`;
   document.getElementById("calendarContainer").innerHTML = html;
+}
+
+function onCellClick(dateStr){
+  // При клике на ячейку показываем Toast с датой
+  showToast(`📅 ${dateStr}`);
 }
 
 /* ---------- РЕНДЕР: ТАБЛИЦА ---------- */
@@ -1461,7 +1469,6 @@ function render(){
   renderSchedule();
   saveToStorage();
   
-  // Обновляем видимость контейнеров
   document.querySelectorAll('.view-toggle button').forEach(b => {
     b.classList.toggle('active', b.dataset.view === currentView);
   });
