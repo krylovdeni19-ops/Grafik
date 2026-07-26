@@ -220,7 +220,7 @@
   }
   .view-toggle button:active{ transform:scale(0.95); }
 
-  /* ===== ТАБЛИЦА (линейный вид) ===== */
+  /* ===== ТАБЛИЦА ===== */
   .schedule-scroll{
     overflow:auto; border-radius:10px; box-shadow:var(--shadow); max-height:65vh; background:#fff;
     -webkit-overflow-scrolling:touch;
@@ -246,52 +246,6 @@
   table.sched td.shifttype{ color:var(--muted); }
   table.sched td.weekend, table.sched th.weekend{ background:#fff9ec; }
   
-  /* ===== КАЛЕНДАРЬ (сетка) ===== */
-  .calendar-grid{
-    display:grid; gap:2px; background:var(--panel); border-radius:10px; padding:4px; box-shadow:var(--shadow);
-  }
-  .calendar-grid .day-header{
-    background:#fbfcfe; padding:6px 4px; text-align:center; font-weight:600; font-size:calc(var(--sub-font)*0.85);
-    color:var(--muted); border-radius:4px;
-  }
-  .calendar-grid .day-header.weekend{ background:#fff9ec; color:var(--muted); }
-  .calendar-cell{
-    background:#fbfcfe; border-radius:4px; padding:3px; min-height:50px; position:relative;
-    transition:background .15s ease; display:flex; flex-direction:column;
-  }
-  .calendar-cell .cell-date{
-    font-weight:600; font-size:calc(var(--sub-font)*0.8); padding:0 4px; text-align:right;
-    color:var(--muted); font-family:"JetBrains Mono",monospace;
-  }
-  .calendar-cell .cell-date.weekend{ color:#e67e22; }
-  .calendar-cell .cell-employees{
-    display:flex; flex-direction:column; gap:1px; padding:2px 2px 2px 4px;
-  }
-  .calendar-cell .cell-employee{
-    font-size:calc(var(--sub-font)*0.6); display:flex; align-items:center; gap:3px;
-    padding:1px 4px; border-radius:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-  }
-  .calendar-cell .cell-employee .emp-badge{
-    font-size:calc(var(--sub-font)*0.5); font-weight:700; padding:0 3px; border-radius:2px;
-    flex-shrink:0;
-  }
-  .calendar-cell .cell-employee .emp-name{
-    font-size:calc(var(--sub-font)*0.6); overflow:hidden; text-overflow:ellipsis;
-  }
-  .calendar-cell.today{
-    background:var(--today-bg-start);
-    box-shadow:inset 0 0 0 2px var(--today-glow-start);
-    animation:cellGlow 2s ease-in-out infinite;
-  }
-  @keyframes cellGlow{
-    0%,100%{ box-shadow:inset 0 0 0 2px var(--today-glow-start), 0 0 15px rgba(255,107,107,.15); }
-    50%{ box-shadow:inset 0 0 0 2px var(--today-glow-end), 0 0 25px rgba(255,217,61,.2); }
-  }
-  .calendar-cell .cell-extra{
-    font-size:calc(var(--sub-font)*0.5); color:var(--muted); padding:0 4px; text-align:right;
-    margin-top:auto;
-  }
-
   /* ===== ПОДСВЕТКА СЕГОДНЯ В ТАБЛИЦЕ ===== */
   table.sched td.today, table.sched th.today {
     background: linear-gradient(135deg, var(--today-bg-start), var(--today-bg-end));
@@ -360,6 +314,129 @@
   }
   table.sched td.today, table.sched th.today { box-shadow:none !important; border-radius:6px; }
 
+  /* ===== КАЛЕНДАРЬ (СЕТКА) ===== */
+  #calendarContainer {
+    background:var(--panel);
+    border-radius:10px;
+    padding:12px;
+    box-shadow:var(--shadow);
+  }
+  .calendar-grid{
+    display:grid;
+    grid-template-columns:repeat(7, 1fr);
+    gap:4px;
+  }
+  .calendar-grid .day-header{
+    background:#fbfcfe;
+    padding:8px 4px;
+    text-align:center;
+    font-weight:700;
+    font-size:calc(var(--sub-font)*0.9);
+    color:var(--muted);
+    border-radius:6px;
+    font-family:"Space Grotesk",sans-serif;
+  }
+  .calendar-grid .day-header.weekend{
+    background:#fff9ec;
+    color:#e67e22;
+  }
+  .calendar-cell{
+    background:#fbfcfe;
+    border-radius:6px;
+    padding:4px;
+    min-height:65px;
+    position:relative;
+    transition:all .15s ease;
+    display:flex;
+    flex-direction:column;
+    border:1.5px solid transparent;
+  }
+  .calendar-cell .cell-date{
+    font-weight:700;
+    font-size:calc(var(--sub-font)*0.85);
+    padding:0 4px;
+    text-align:right;
+    color:var(--muted);
+    font-family:"JetBrains Mono",monospace;
+    flex-shrink:0;
+  }
+  .calendar-cell .cell-date.weekend{
+    color:#e67e22;
+  }
+  .calendar-cell .cell-employees{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    padding:2px 2px 2px 4px;
+    flex:1;
+  }
+  .calendar-cell .cell-employee{
+    font-size:calc(var(--sub-font)*0.65);
+    display:flex;
+    align-items:center;
+    gap:3px;
+    padding:1px 4px;
+    border-radius:3px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    background:rgba(255,255,255,0.5);
+  }
+  .calendar-cell .cell-employee .emp-badge{
+    font-size:calc(var(--sub-font)*0.5);
+    font-weight:700;
+    padding:0 4px;
+    border-radius:3px;
+    flex-shrink:0;
+    min-width:16px;
+    height:16px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .calendar-cell .cell-employee .emp-name{
+    font-size:calc(var(--sub-font)*0.6);
+    overflow:hidden;
+    text-overflow:ellipsis;
+    font-weight:500;
+  }
+  .calendar-cell .cell-extra{
+    font-size:calc(var(--sub-font)*0.5);
+    color:var(--muted);
+    padding:0 4px;
+    text-align:right;
+    margin-top:auto;
+    font-weight:600;
+  }
+  .calendar-cell.today{
+    background:linear-gradient(135deg, var(--today-bg-start), var(--today-bg-end));
+    border-color:var(--today-glow-start);
+    animation:cellGlow 2s ease-in-out infinite;
+    box-shadow:0 0 20px rgba(255,107,107,0.1);
+  }
+  @keyframes cellGlow{
+    0%,100%{ border-color:var(--today-glow-start); box-shadow:0 0 20px rgba(255,107,107,0.1); }
+    50%{ border-color:var(--today-glow-end); box-shadow:0 0 30px rgba(255,217,61,0.15); }
+  }
+  .calendar-cell.today .cell-date{
+    background:linear-gradient(135deg, var(--today-glow-start), var(--today-glow-end));
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
+    font-weight:900;
+  }
+  .calendar-cell.empty{
+    background:transparent;
+    min-height:20px;
+    border:none;
+  }
+  .calendar-cell .cell-empty-label{
+    color:#e8ecf0;
+    text-align:center;
+    font-size:calc(var(--sub-font)*0.5);
+    padding:4px 0;
+  }
+
   /* ===== БЕЙДЖИ ===== */
   .badge{
     display:inline-flex; align-items:center; justify-content:center; border-radius:4px;
@@ -377,7 +454,27 @@
   .badge.РЗ-День{ background:var(--day-bg); color:var(--day-color); border-color:var(--day-color); border-style:dashed; font-weight:800; }
   .badge.Р-Ночь{ background:var(--night-bg); color:var(--night-color); border-color:var(--night-color); font-weight:800; }
   .badge.РЗ-Ночь{ background:var(--night-bg); color:var(--night-color); border-color:var(--night-color); border-style:dashed; font-weight:800; }
-  .emp-badge.badge{ font-size:calc(var(--sub-font)*0.5); min-width:12px; height:14px; padding:0 2px; }
+  
+  .emp-badge{
+    font-size:calc(var(--sub-font)*0.5);
+    min-width:14px;
+    height:14px;
+    padding:0 3px;
+    border-radius:3px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+    font-family:"JetBrains Mono",monospace;
+    border:1px solid transparent;
+  }
+  .emp-badge.Р-День{ background:var(--day-bg); color:var(--day-color); border-color:var(--day-color); }
+  .emp-badge.РЗ-День{ background:var(--day-bg); color:var(--day-color); border-color:var(--day-color); border-style:dashed; }
+  .emp-badge.Р-Ночь{ background:var(--night-bg); color:var(--night-color); border-color:var(--night-color); }
+  .emp-badge.РЗ-Ночь{ background:var(--night-bg); color:var(--night-color); border-color:var(--night-color); border-style:dashed; }
+  .emp-badge.В{ background:var(--rest-soft); color:var(--rest); border-color:var(--rest); }
+  .emp-badge.Б{ background:var(--sick-soft); color:var(--sick); border-color:var(--sick); }
+  .emp-badge.О{ background:var(--vacation-soft); color:var(--vacation); border-color:var(--vacation); }
 
   tr.totals td{ background:#f3f5fb; font-weight:700; font-family:"JetBrains Mono",monospace; }
   tr.totals td.name{ background:#f3f5fb; font-family:"Space Grotesk",sans-serif; }
@@ -404,29 +501,28 @@
   @keyframes slideUp{ from{opacity:0; transform:translateX(-50%) translateY(20px);} to{opacity:1; transform:translateX(-50%) translateY(0);} }
 
   /* ===== АДАПТИВ КАЛЕНДАРЯ ===== */
-  .calendar-grid{
-    grid-template-columns:repeat(7, 1fr);
+  @media (max-width:768px){
+    .calendar-grid{ gap:3px; }
+    .calendar-cell{ min-height:50px; padding:3px; }
+    .calendar-cell .cell-date{ font-size:10px; }
+    .calendar-cell .cell-employee{ font-size:9px; padding:1px 3px; }
+    .calendar-cell .cell-employee .emp-name{ font-size:8px; }
+    .calendar-cell .cell-employee .emp-badge{ font-size:7px; min-width:12px; height:12px; }
+    .calendar-cell .cell-extra{ font-size:8px; }
+    #calendarContainer{ padding:8px; }
+    .calendar-grid .day-header{ font-size:10px; padding:6px 2px; }
   }
   @media (max-width:480px){
-    .calendar-grid{ gap:1px; padding:2px; }
-    .calendar-cell{ min-height:35px; padding:2px; }
-    .calendar-cell .cell-date{ font-size:9px; }
-    .calendar-cell .cell-employee .emp-name{ font-size:8px; }
-    .calendar-cell .cell-employee .emp-badge{ font-size:7px; }
-    .calendar-cell .cell-extra{ font-size:7px; }
-    .toast{ font-size:11px; padding:10px 14px; bottom:10px; }
-    .month-nav .field{ min-width:60px !important; }
-    .month-nav button{ width:26px; height:26px; font-size:12px; }
-    .current-month-label{ font-size:13px; min-width:60px; }
-    .settings-grid .field{ width:100% !important; min-width:auto; }
-    .search-wrap{ flex-direction:column; gap:4px; }
-    .search-wrap .field{ min-width:auto; }
-    .toolbar .btn{ font-size:9px; padding:4px 6px; }
-    .view-toggle button{ font-size:10px; padding:4px 8px; }
-  }
-  @media (max-width:380px){
-    .calendar-cell .cell-employee .emp-name{ font-size:7px; }
-    .calendar-cell .cell-date{ font-size:8px; }
+    .calendar-grid{ gap:2px; }
+    .calendar-cell{ min-height:40px; padding:2px; }
+    .calendar-cell .cell-date{ font-size:8px; padding:0 2px; }
+    .calendar-cell .cell-employee{ font-size:7px; padding:1px 2px; gap:2px; }
+    .calendar-cell .cell-employee .emp-name{ font-size:6px; }
+    .calendar-cell .cell-employee .emp-badge{ font-size:6px; min-width:10px; height:10px; padding:0 2px; }
+    .calendar-cell .cell-extra{ font-size:6px; }
+    #calendarContainer{ padding:4px; }
+    .calendar-grid .day-header{ font-size:8px; padding:4px 2px; }
+    .calendar-grid{ gap:1px; }
   }
 
   .rows{ display:flex; flex-direction:column; gap:6px; }
@@ -554,12 +650,13 @@
       </div>
     </div>
 
-    <div id="scheduleContainer">
-      <div class="schedule-scroll" id="tableContainer">
+    <div id="tableContainer">
+      <div class="schedule-scroll">
         <div id="scheduleTable"></div>
       </div>
-      <div id="calendarContainer" style="display:none;"></div>
     </div>
+    
+    <div id="calendarContainer" style="display:none;"></div>
 
     <div class="legend">
       <span class="chip day-chip"><span class="sw" style="background:var(--day-color);"></span>День (Р)</span>
@@ -982,23 +1079,24 @@ function renderCalendar(){
     return;
   }
 
-  // Определяем первый день месяца
+  // Определяем первый день месяца (0 = воскресенье)
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = nDays;
 
   let html = `<div class="calendar-grid">`;
   
-  // Заголовки дней недели
+  // Заголовки дней недели (начинаем с понедельника)
   const dayHeaders = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
   dayHeaders.forEach((d,i) => {
     const isWeekend = i >= 5;
     html += `<div class="day-header ${isWeekend ? 'weekend' : ''}">${d}</div>`;
   });
 
-  // Пустые ячейки до первого дня
+  // Пустые ячейки до первого дня месяца
+  // Если firstDay = 0 (воскресенье), то пустых ячеек 6 (пн-сб)
   const startOffset = firstDay === 0 ? 6 : firstDay - 1;
   for(let i=0; i<startOffset; i++){
-    html += `<div class="calendar-cell" style="background:transparent;min-height:20px;"></div>`;
+    html += `<div class="calendar-cell empty"></div>`;
   }
 
   // Дни месяца
@@ -1012,6 +1110,13 @@ function renderCalendar(){
     const dayEmployees = visibleEmployees.filter(emp => {
       const status = computeDayStatus(date, emp, refDate);
       return status === 'Р' || status === 'РЗ';
+    }).sort((a,b) => {
+      // Сортируем: сначала день, потом ночь
+      const typeA = getShiftType(a.shift)?.type || '';
+      const typeB = getShiftType(b.shift)?.type || '';
+      if (typeA === 'day' && typeB === 'night') return -1;
+      if (typeA === 'night' && typeB === 'day') return 1;
+      return a.name.localeCompare(b.name);
     });
 
     html += `<div class="calendar-cell ${isToday ? 'today' : ''}">`;
@@ -1019,22 +1124,22 @@ function renderCalendar(){
     
     if (dayEmployees.length > 0){
       html += `<div class="cell-employees">`;
-      // Показываем первых 3 сотрудников
-      const showEmployees = dayEmployees.slice(0, 3);
+      // Показываем первых 4 сотрудников
+      const showEmployees = dayEmployees.slice(0, 4);
       showEmployees.forEach(emp => {
         const status = computeDayStatus(date, emp, refDate);
         const badgeClass = getBadgeClass(status, emp);
         html += `<div class="cell-employee">
-          <span class="emp-badge badge ${badgeClass}">${status}</span>
+          <span class="emp-badge ${badgeClass}">${status}</span>
           <span class="emp-name">${emp.name}</span>
         </div>`;
       });
-      if (dayEmployees.length > 3){
-        html += `<div class="cell-extra">+${dayEmployees.length - 3} ещё</div>`;
+      if (dayEmployees.length > 4){
+        html += `<div class="cell-extra">+${dayEmployees.length - 4} ещё</div>`;
       }
       html += `</div>`;
     } else {
-      html += `<div class="cell-extra" style="color:#e8ecf0;">—</div>`;
+      html += `<div class="cell-extra" style="color:#d0d4dc;">—</div>`;
     }
     
     html += `</div>`;
@@ -1356,7 +1461,7 @@ function render(){
   renderSchedule();
   saveToStorage();
   
-  // Обновляем активную кнопку вида
+  // Обновляем видимость контейнеров
   document.querySelectorAll('.view-toggle button').forEach(b => {
     b.classList.toggle('active', b.dataset.view === currentView);
   });
